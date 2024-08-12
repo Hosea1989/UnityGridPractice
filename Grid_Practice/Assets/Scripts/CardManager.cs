@@ -15,7 +15,7 @@ public class CardManager : MonoBehaviour
         ShuffleDeck();
 
         // Draw initial cards (e.g., 3 cards)
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 5; i++)
         {
             DrawCard();
         }

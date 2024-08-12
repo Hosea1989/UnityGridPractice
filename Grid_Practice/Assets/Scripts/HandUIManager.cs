@@ -24,5 +24,9 @@ public class HandUIManager : MonoBehaviour
             Destroy(cardUIElements[cardIndex]);
             cardUIElements.RemoveAt(cardIndex);
         }
+        else
+        {
+            Debug.LogWarning("Attempted to remove a card at an invalid index: " + cardIndex);
+        }
     }
 }

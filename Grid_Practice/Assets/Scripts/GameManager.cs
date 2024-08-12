@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public CardManager cardManager;          // Reference to the CardManager
     public HandUIManager handUIManager;      // Reference to the HandUIManager
-    public GridGenerator gridGenerator;          // Reference to the GridManager
+    public GridGenerator gridGenerator;      // Reference to the GridGenerator
     public int currentPlayer = 0;            // Track the current player (if multiplayer)
 
     void Start()
@@ -19,28 +19,28 @@ public class GameManager : MonoBehaviour
     {
         // Shuffle the deck and deal initial hands
         cardManager.ShuffleDeck();
-        DealInitialCards();
+        // DealInitialCards();
 
         // Set up the game state
         currentPlayer = 0;
         StartPlayerTurn();
     }
 
-    void DealInitialCards()
-    {
-        // Example: Deal 3 cards to the player at the start
-        for (int i = 0; i < 3; i++)
-        {
-            cardManager.DrawCard();
-        }
-    }
+    // void DealInitialCards()
+    // {
+    //     // Adjusted: Deal 5 cards to the player at the start
+    //     cardManager.DrawInitialHand(5);
+    // }
 
     void StartPlayerTurn()
     {
         // Logic to start a player's turn
         Debug.Log("Player " + currentPlayer + "'s turn starts.");
-        // Allow the player to draw a card or take an action
+        
+        // Example: Draw a card at the start of the turn
         cardManager.DrawCard();
+
+        // Additional turn logic can go here (e.g., rolling dice, playing cards, etc.)
     }
 
     public void EndPlayerTurn()
@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
         // End the current player's turn and check game state
         Debug.Log("Player " + currentPlayer + "'s turn ends.");
         currentPlayer = (currentPlayer + 1) % 2; // Example for 2 players
+
+        // Start the next player's turn
         StartPlayerTurn();
     }
 }

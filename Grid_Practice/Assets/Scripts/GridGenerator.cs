@@ -18,6 +18,11 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
+        GenerateGrid();
+    }
+
+    void GenerateGrid()
+    {
         gridTiles = new GameObject[gridWidth, gridHeight];
 
         for (int x = 0; x < gridWidth; x++)
@@ -94,29 +99,43 @@ public class GridGenerator : MonoBehaviour
     }
 
     public bool PlaceCharacter(GameObject characterPrefab, Vector2Int gridPosition)
-{
-    int x = gridPosition.x;
-    int z = gridPosition.y;
-
-    if (x >= 0 && x < gridWidth && z >= 0 && z < gridHeight)
     {
-        // Convert the grid position to world position
-        Vector3 worldPosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
+        int x = gridPosition.x;
+        int z = gridPosition.y;
 
-        // Instantiate the character at the world position
-        GameObject character = Instantiate(characterPrefab, worldPosition, Quaternion.identity);
+        if (x >= 0 && x < gridWidth && z >= 0 && z < gridHeight)
+        {
+            // Convert the grid position to world position
+            Vector3 worldPosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
 
-        // Set the parent to the mapParent if needed
-        character.transform.SetParent(mapParent.transform);
+            // Instantiate the character at the world position
+            GameObject character = Instantiate(characterPrefab, worldPosition, Quaternion.identity);
 
-        // Optionally, mark this tile as occupied or handle it in your game logic
-        return true; // Character placed successfully
+            // Set the parent to the mapParent if needed
+            character.transform.SetParent(mapParent.transform);
+
+            // Optionally, mark this tile as occupied or handle it in your game logic
+            return true; // Character placed successfully
+        }
+        else
+        {
+            Debug.LogError("Grid position out of bounds.");
+            return false; // Failed to place character
+        }
     }
-    else
+
+    // Draw grid gizmos in the Editor
+    void OnDrawGizmos()
     {
-        Debug.LogError("Grid position out of bounds.");
-        return false; // Failed to place character
-    }
-}
+        Gizmos.color = Color.yellow;
 
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int z = 0; z < gridHeight; z++)
+            {
+                Vector3 tilePosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
+                Gizmos.DrawWireCube(tilePosition, new Vector3(tileSpacing, 0.1f, tileSpacing));
+            }
+        }
+    }
 }

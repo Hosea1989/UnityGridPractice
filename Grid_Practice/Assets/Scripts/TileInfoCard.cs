@@ -14,9 +14,16 @@ public class TileInfoCard : MonoBehaviour
 
     public void UpdateInfoCard(string tileType, Vector3 location)
     {
-        // Update the text with the provided tile type and location
+        // Convert the location from Vector3 (float) to Vector3Int (int)
+        Vector3Int locationInt = new Vector3Int(
+            Mathf.RoundToInt(location.x),
+            Mathf.RoundToInt(location.y),
+            Mathf.RoundToInt(location.z)
+        );
+
+        // Update the text with the provided tile type and integer location
         tileTypeText.text = tileType;
-        locationText.text = location.ToString();
+        locationText.text = locationInt.ToString(); // Converts Vector3Int to a string
 
         // Show the info card
         infoCardPanel.SetActive(true);

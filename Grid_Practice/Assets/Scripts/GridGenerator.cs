@@ -12,7 +12,7 @@ public class GridGenerator : MonoBehaviour
     public GameObject mapParent; // Reference to the map parent object
     public int gridWidth = 13;      // Width of the grid
     public int gridHeight = 19;     // Height of the grid
-    public float tileSpacing = 1.1f; // Spacing between tiles
+    public float tileSpacing; // Spacing between tiles
 
     private GameObject[,] gridTiles; // Array to store the tile GameObjects
 

@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public CardManager cardManager;          // Reference to the CardManager
-    public HandUIManager handUIManager;      // Reference to the HandUIManager
     public GridGenerator gridGenerator;      // Reference to the GridGenerator
     public int currentPlayer = 0;            // Track the current player (if multiplayer)
 
@@ -19,18 +18,21 @@ public class GameManager : MonoBehaviour
     {
         // Shuffle the deck and deal initial hands
         cardManager.ShuffleDeck();
-        // DealInitialCards();
+        DealInitialCards();
 
         // Set up the game state
         currentPlayer = 0;
         StartPlayerTurn();
     }
 
-    // void DealInitialCards()
-    // {
-    //     // Adjusted: Deal 5 cards to the player at the start
-    //     cardManager.DrawInitialHand(5);
-    // }
+    void DealInitialCards()
+    {
+        // Adjusted: Deal 5 cards to the player at the start
+        for (int i = 0; i < 5; i++)
+        {
+            cardManager.DrawCard();
+        }
+    }
 
     void StartPlayerTurn()
     {

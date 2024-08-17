@@ -40,7 +40,7 @@ public class TileHoverDetector : MonoBehaviour
                 }
 
                 // Change the tile's color to indicate hovering
-                renderer.material.color = Color.black;
+                renderer.material.color = Color.green;
 
                 // Update lastRenderer to the current tile
                 lastRenderer = renderer;

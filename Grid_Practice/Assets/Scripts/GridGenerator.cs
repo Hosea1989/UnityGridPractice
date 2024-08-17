@@ -17,34 +17,48 @@ public class GridGenerator : MonoBehaviour
     private GameObject[,] gridTiles; // Array to store the tile GameObjects
 
     void Start()
-    {
-        GenerateGrid();
-    }
+{
+    // Calculate tile size based on the PlayableTile prefab
+    tileSpacing = PlayableTile.GetComponent<Renderer>().bounds.size.x * 1.0f; // Adjust multiplier if needed
 
-    void GenerateGrid()
-    {
-        gridTiles = new GameObject[gridWidth, gridHeight];
+    GenerateGrid();
+}
 
-        for (int x = 0; x < gridWidth; x++)
+   void GenerateGrid()
+{
+    gridTiles = new GameObject[gridWidth, gridHeight];
+
+    for (int x = 0; x < gridWidth; x++)
+    {
+        for (int z = 0; z < gridHeight; z++)
         {
-            for (int z = 0; z < gridHeight; z++)
+            Vector3 tilePosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
+            GameObject newTile = Instantiate(PlayableTile, tilePosition, Quaternion.identity);
+
+            // Set the parent of the tile to the mapParent
+            newTile.transform.SetParent(mapParent.transform);
+
+            // Alternate the color to create a chessboard pattern
+            Renderer tileRenderer = newTile.GetComponent<Renderer>();
+            if ((x + z) % 2 == 0)
             {
-                Vector3 tilePosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
-                GameObject newTile = Instantiate(PlayableTile, tilePosition, Quaternion.identity);
-
-                // Set the parent of the tile to the mapParent
-                newTile.transform.SetParent(mapParent.transform);
-
-                gridTiles[x, z] = newTile; // Store the tile in the array
+                tileRenderer.material.color = Color.white; // White tile
             }
+            else
+            {
+                tileRenderer.material.color = Color.black; // Black tile
+            }
+
+            gridTiles[x, z] = newTile; // Store the tile in the array
         }
-
-        // Replace the tile at coordinates (6, 1) with the Domain Leader tile
-        ReplaceTileWithDomainLeader(6, 1);
-
-        // Replace the tile at coordinates (6, 18) with the Enemy Domain Leader tile
-        ReplaceTileWithEnemyDomainLeader(6, 17);
     }
+
+    // Replace the tile at coordinates (6, 1) with the Domain Leader tile
+    ReplaceTileWithDomainLeader(6, 1);
+
+    // Replace the tile at coordinates (6, 18) with the Enemy Domain Leader tile
+    ReplaceTileWithEnemyDomainLeader(6, 17);
+}
 
     void ReplaceTileWithDomainLeader(int x, int z)
     {

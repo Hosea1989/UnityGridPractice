@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     void StartPlayerTurn()
     {
         // Logic to start a player's turn
-        Debug.Log("Player " + currentPlayer + "'s turn starts.");
+        Debug.Log("Player " + (currentPlayer + 1) + "'s turn starts.");
         
         // Example: Draw a card at the start of the turn
         cardManager.DrawCard();

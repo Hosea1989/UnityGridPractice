@@ -4,67 +4,67 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    public GameObject PlayableTile; // Field to hold the tile prefab
-    public GameObject DomainLeaderTile; // Field to hold the Domain Leader tile prefab
-    public GameObject DomainLeader; // Field to hold the Domain Leader character prefab
-    public GameObject EnemyDomainLeaderTile; // Field to hold the Enemy Domain Leader tile prefab
-    public GameObject EnemyDomainLeader; // Field to hold the Enemy Domain Leader character prefab
-    public GameObject mapParent; // Reference to the map parent object
-    public int gridWidth = 13;      // Width of the grid
-    public int gridHeight = 19;     // Height of the grid
-    public float tileSpacing; // Spacing between tiles
+    public GameObject PlayableTile; // Prefab for the regular playable tiles
+    public GameObject DomainLeaderTile; // Prefab for the Domain Leader tile
+    public GameObject DomainLeader; // Prefab for the Domain Leader character
+    public GameObject EnemyDomainLeaderTile; // Prefab for the Enemy Domain Leader tile
+    public GameObject EnemyDomainLeader; // Prefab for the Enemy Domain Leader character
+    public GameObject mapParent; // Parent object for organizing the grid in the hierarchy
+    public int gridWidth = 13;      // Number of tiles in the grid's width
+    public int gridHeight = 19;     // Number of tiles in the grid's height
+    public float tileSpacing; // Spacing between tiles, calculated based on PlayableTile's size
 
-    private GameObject[,] gridTiles; // Array to store the tile GameObjects
+    private GameObject[,] gridTiles; // Array to store references to the tile GameObjects
 
     void Start()
-{
-    // Calculate tile size based on the PlayableTile prefab
-    tileSpacing = PlayableTile.GetComponent<Renderer>().bounds.size.x * 1.0f; // Adjust multiplier if needed
-
-    GenerateGrid();
-}
-
-   void GenerateGrid()
-{
-    gridTiles = new GameObject[gridWidth, gridHeight];
-
-    for (int x = 0; x < gridWidth; x++)
     {
-        for (int z = 0; z < gridHeight; z++)
-        {
-            Vector3 tilePosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
-            GameObject newTile = Instantiate(PlayableTile, tilePosition, Quaternion.identity);
+        // Calculate tile size based on the PlayableTile prefab
+        tileSpacing = PlayableTile.GetComponent<Renderer>().bounds.size.x * 1.0f; // Adjust multiplier if needed
 
-            // Set the parent of the tile to the mapParent
-            newTile.transform.SetParent(mapParent.transform);
-
-            // Alternate the color to create a chessboard pattern
-            Renderer tileRenderer = newTile.GetComponent<Renderer>();
-            if ((x + z) % 2 == 0)
-            {
-                tileRenderer.material.color = Color.white; // White tile
-            }
-            else
-            {
-                tileRenderer.material.color = Color.black; // Black tile
-            }
-
-            gridTiles[x, z] = newTile; // Store the tile in the array
-        }
+        GenerateGrid(); // Create the grid
     }
 
-    // Replace the tile at coordinates (6, 1) with the Domain Leader tile
-    ReplaceTileWithDomainLeader(6, 1);
+    // Method to generate the grid
+    void GenerateGrid()
+    {
+        gridTiles = new GameObject[gridWidth, gridHeight];
 
-    // Replace the tile at coordinates (6, 18) with the Enemy Domain Leader tile
-    ReplaceTileWithEnemyDomainLeader(6, 17);
-}
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int z = 0; z < gridHeight; z++)
+            {
+                Vector3 tilePosition = new Vector3(x * tileSpacing, 0, z * tileSpacing);
+                GameObject newTile = Instantiate(PlayableTile, tilePosition, Quaternion.identity);
 
+                // Set the parent of the tile to the mapParent for better hierarchy organization
+                newTile.transform.SetParent(mapParent.transform);
+
+                // Alternate the color to create a chessboard pattern
+                Renderer tileRenderer = newTile.GetComponent<Renderer>();
+                if ((x + z) % 2 == 0)
+                {
+                    tileRenderer.material.color = Color.white; // White tile
+                }
+                else
+                {
+                    tileRenderer.material.color = Color.black; // Black tile
+                }
+
+                gridTiles[x, z] = newTile; // Store the tile in the array
+            }
+        }
+
+        // Place Domain Leaders at specific positions
+        ReplaceTileWithDomainLeader(6, 1);
+        ReplaceTileWithEnemyDomainLeader(6, 17);
+    }
+
+    // Method to replace a tile with the Domain Leader tile
     void ReplaceTileWithDomainLeader(int x, int z)
     {
         if (x >= 0 && x < gridWidth && z >= 0 && z < gridHeight)
         {
-            // Destroy the existing tile
+            // Destroy the existing tile at the given coordinates
             Destroy(gridTiles[x, z]);
 
             // Instantiate the Domain Leader tile at the same position
@@ -86,11 +86,12 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
+    // Method to replace a tile with the Enemy Domain Leader tile
     void ReplaceTileWithEnemyDomainLeader(int x, int z)
     {
         if (x >= 0 && x < gridWidth && z >= 0 && z < gridHeight)
         {
-            // Destroy the existing tile
+            // Destroy the existing tile at the given coordinates
             Destroy(gridTiles[x, z]);
 
             // Instantiate the Enemy Domain Leader tile at the same position
@@ -112,6 +113,7 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
+    // Method to place a character on the grid
     public bool PlaceCharacter(GameObject characterPrefab, Vector2Int gridPosition)
     {
         int x = gridPosition.x;
@@ -138,7 +140,7 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
-    // Draw grid gizmos in the Editor
+    // Draw grid gizmos in the Editor to visualize the grid
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;

@@ -1,142 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 public class CardsPile : MonoBehaviour
 {
-	public float height = 0.5f;
-	public float width = 1f;
-	[Range(0f, 90f)] public float maxCardAngle = 5f;
-	public float yPerCard = -0.005f;
-	public float zDistance;
+    public float height = 0.5f;
+    public float width = 1f;
+    [Range(0f, 90f)] public float maxCardAngle = 5f;
+    public float yPerCard = -0.005f;
+    public float zDistance;
 
-	public float moveDuration = 0.5f;
-	public Transform cardHolderPrefab;
+    public Transform cardHolderPrefab;
 
-	readonly List<GameObject> cards = new List<GameObject>();
+    private readonly List<GameObject> cards = new List<GameObject>();
 
-	public List<GameObject> Cards => new List<GameObject>(cards);
+    public List<GameObject> Cards => new List<GameObject>(cards);
 
-	public event Action<int> OnCountChanged;
+    public event Action<int> OnCountChanged;
 
-	readonly List<Transform> cardsHolders = new List<Transform>();
+    private readonly List<Transform> cardsHolders = new List<Transform>();
 
-	bool updatePositions;
-	readonly List<GameObject> forceSetPosition = new List<GameObject>();
+    private bool updatePositions;
+    private readonly List<GameObject> forceSetPosition = new List<GameObject>();
 
-	public void Add(GameObject card, bool moveAnimation = true) => Add(card, -1, moveAnimation);
+    public void Add(GameObject card, bool moveAnimation = false) => Add(card, -1, moveAnimation);
 
-	public void Add(GameObject card, int index, bool moveAnimation = false)
-	{
-		Transform cardHolder = GetCardHolder();
+    public void Add(GameObject card, int index, bool moveAnimation = false)
+    {
+        Transform cardHolder = GetCardHolder();
 
-		if (index == -1)
-		{
-			cards.Add(card);
-			cardsHolders.Add(cardHolder);
-		}
-		else
-		{
-			cards.Insert(index, card);
-			cardsHolders.Insert(index, cardHolder);
-		}
+        if (index == -1)
+        {
+            cards.Add(card);
+            cardsHolders.Add(cardHolder);
+        }
+        else
+        {
+            cards.Insert(index, card);
+            cardsHolders.Insert(index, cardHolder);
+        }
 
-		updatePositions = true;
+        updatePositions = true;
 
-		if (!moveAnimation)
-			forceSetPosition.Add(card);
+        if (!moveAnimation)
+            forceSetPosition.Add(card);
 
-		OnCountChanged?.Invoke(cards.Count);
-	}
+        OnCountChanged?.Invoke(cards.Count);
+    }
 
-	public void Remove(GameObject card)
-	{
-		if (!cards.Contains(card))
-			return;
+    public void Remove(GameObject card)
+    {
+        if (!cards.Contains(card))
+            return;
 
-		Transform cardHolder = cardsHolders[cards.IndexOf(card)];
-		cardsHolders.Remove(cardHolder);
-		Destroy(cardHolder.gameObject);
+        Transform cardHolder = cardsHolders[cards.IndexOf(card)];
+        cardsHolders.Remove(cardHolder);
+        Destroy(cardHolder.gameObject);
 
-		cards.Remove(card);
-		card.transform.DOKill();
-		card.transform.SetParent(null);
-		updatePositions = true;
+        cards.Remove(card);
+        card.transform.SetParent(null);
+        updatePositions = true;
 
-		OnCountChanged?.Invoke(cards.Count);
-	}
+        OnCountChanged?.Invoke(cards.Count);
+    }
 
-	public void RemoveAt(int index)
-	{
-		Remove(cards[index]);
-	}
+    Transform GetCardHolder()
+    {
+        Transform cardHolder = Instantiate(cardHolderPrefab, transform, false);
+        return cardHolder;
+    }
 
-	public void RemoveAll()
-	{
-		while (cards.Count > 0)
-			Remove(cards[0]);
-	}
+    void UpdatePositions()
+{
+    Vector3 targetPosition = new Vector3(4.72f, -37.47f, 41.12f);
+    Vector3 targetRotation = new Vector3(86.42f, 267.59f, 87.93f);
 
-	Transform GetCardHolder()
-	{
-		Transform cardHolder = Instantiate(cardHolderPrefab, transform, false);
-		return cardHolder;
-	}
+    float cardSpacing = 0.75f; // Adjust this for the spacing between the cards
+    float cardScale = 0.32f;   // Scale down the cards
 
-	void UpdatePositions()
-	{
-		float radius = Mathf.Abs(height) < 0.001f
-			? width * width / 0.001f * Mathf.Sign(height) 
-			: height / 2f + width * width / (8f * height);
+    for (int i = 0; i < cards.Count; i++)
+    {
+        // Calculate the position for each card based on its index
+        Vector3 cardPosition = targetPosition + new Vector3((i - (cards.Count - 1) / 2f) * cardSpacing, 0, 0);
 
-		float angle = 2f * Mathf.Asin(0.5f * width / radius) * Mathf.Rad2Deg;
-		angle = Mathf.Sign(angle) * Mathf.Min(Mathf.Abs(angle), maxCardAngle * (cards.Count - 1));
-		float cardAngle = cards.Count == 1 ? 0f : angle / (cards.Count - 1f);
+        // Set the position and rotation of each card holder
+        cardsHolders[i].transform.position = cardPosition;
 
-		for (int i = 0; i < cards.Count; i++)
-		{
-			cards[i].transform.SetParent(transform, true);
+        // Set the rotation to match the target rotation
+        cardsHolders[i].transform.rotation = Quaternion.Euler(targetRotation);
 
-			Vector3 position = new Vector3(0f, radius, 0f);
-			position = Quaternion.Euler(0f, 0f, angle / 2f - cardAngle * i) * position;
-			position.y += height - radius;
-			position += i * new Vector3(0f, yPerCard, zDistance);
+        // Adjust the card itself
+        cards[i].transform.SetParent(cardsHolders[i].transform, true);
+        cards[i].transform.localPosition = Vector3.zero;
+        cards[i].transform.localRotation = Quaternion.identity;
+        cards[i].transform.localScale = Vector3.one * cardScale;
+    }
+}
+    void LateUpdate()
+    {
+        if (updatePositions)
+        {
+            updatePositions = false;
+            UpdatePositions();
+        }
+    }
 
-			cardsHolders[i].transform.localPosition = position;
-			cardsHolders[i].transform.localEulerAngles = new Vector3(0f, 0f, angle / 2f - cardAngle * i);
-
-			cards[i].transform.SetParent(cardsHolders[i].transform, true);
-
-			if (!forceSetPosition.Contains(cards[i]))
-			{
-				cards[i].transform.DOKill();
-				cards[i].transform.DOLocalMove(Vector3.zero, moveDuration);
-				cards[i].transform.DOLocalRotate(Vector3.zero, moveDuration);
-				cards[i].transform.DOScale(Vector3.one, moveDuration);
-			}
-			else
-			{
-				forceSetPosition.Remove(cards[i]);
-
-				cards[i].transform.localPosition = Vector3.zero;
-				cards[i].transform.localRotation = Quaternion.identity;
-				cards[i].transform.localScale = Vector3.one;
-			}
-		}
-	}
-
-	void LateUpdate()
-	{
-		if (updatePositions)
-		{
-			updatePositions = false;
-			UpdatePositions();
-		}
-	}
-
-	void OnValidate()
-	{
-		updatePositions = true;
-	}
+    void OnValidate()
+    {
+        updatePositions = true;
+    }
 }

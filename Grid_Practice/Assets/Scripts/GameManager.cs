@@ -27,8 +27,8 @@ public class GameManager : MonoBehaviour
 
     void DealInitialCards()
     {
-        // Adjusted: Deal 5 cards to the player at the start
-        for (int i = 0; i < 5; i++)
+        // Adjusted: Deal 4 cards to the player at the start
+        for (int i = 0; i < 4; i++)
         {
             cardManager.DrawCard();
         }
@@ -38,8 +38,8 @@ public class GameManager : MonoBehaviour
     {
         // Logic to start a player's turn
         Debug.Log("Player " + (currentPlayer + 1) + "'s turn starts.");
-        
-        // Example: Draw a card at the start of the turn
+
+        // Draw a card at the start of the turn
         cardManager.DrawCard();
 
         // Additional turn logic can go here (e.g., rolling dice, playing cards, etc.)
